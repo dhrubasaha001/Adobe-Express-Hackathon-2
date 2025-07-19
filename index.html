@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palette Perfect</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Poppins -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Custom CSS for animations and overrides */
+        body {
+            font-family: 'Inter', 'Poppins', sans-serif;
+        }
+
+        /* Keyframes for fade/slide animations */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeInUp {
+            animation: fadeInUp 0.8s cubic-bezier(.4, 0, .2, 1) both;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        .animate-float {
+            animation: float 2.5s ease-in-out infinite;
+        }
+
+        /* Custom scrollbar for main content */
+        main::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        main::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        main::-webkit-scrollbar-thumb {
+            background: rgba(147, 197, 253, 0.5);
+            /* blue-300 */
+            border-radius: 10px;
+        }
+
+        main::-webkit-scrollbar-thumb:hover {
+            background: rgba(147, 197, 253, 0.7);
+        }
+
+        /* Custom color input styling */
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: none;
+            padding: 0;
+            border-radius: 0.5rem;
+            /* rounded-lg */
+            overflow: hidden;
+            /* Hide default color picker border */
+            cursor: pointer;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 0.5rem;
+            /* rounded-lg */
+        }
+
+        input[type="color"]::-moz-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-moz-color-swatch {
+            border: none;
+            border-radius: 0.5rem;
+            /* rounded-lg */
+        }
+
+        /* Hidden file input visual */
+        .custom-file-input {
+            display: inline-block;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            /* rounded-full */
+            border: 0;
+            font-size: 0.875rem;
+            /* text-sm */
+            font-weight: 600;
+            /* font-semibold */
+            background-color: #e0f2fe;
+            /* indigo-100 */
+            color: #4338ca;
+            /* indigo-700 */
+            transition: background-color 0.2s ease;
+        }
+
+        .custom-file-input:hover {
+            background-color: #bfdbfe;
+            /* indigo-200 */
+        }
+
+        .custom-file-input input[type="file"] {
+            display: none;
+            /* Hide the actual input */
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-50 via-emerald-50 to-pink-100 text-gray-900 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header
+        class="relative bg-white/80 shadow-lg py-8 px-4 md:px-8 flex flex-col items-center rounded-b-3xl animate-fadeInUp backdrop-blur-sm">
+        <div class="absolute top-2 right-4 flex gap-2 opacity-80 pointer-events-none select-none">
+            <!-- Floating palette swatches -->
+            <span class="w-6 h-6 rounded-full bg-indigo-500 shadow-lg animate-float" style="animation-delay:0s"></span>
+            <span class="w-6 h-6 rounded-full bg-emerald-400 shadow-lg animate-float"
+                style="animation-delay:0.3s"></span>
+            <span class="w-6 h-6 rounded-full bg-pink-400 shadow-lg animate-float" style="animation-delay:0.6s"></span>
+            <span class="w-6 h-6 rounded-full bg-yellow-300 shadow-lg animate-float"
+                style="animation-delay:0.9s"></span>
+        </div>
+        <h1
+            class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-indigo-600 via-emerald-500 to-pink-500 bg-clip-text text-transparent drop-shadow-md">
+            Palette Perfect</h1>
+        <p class="text-lg text-gray-600 font-medium">AI-powered color palette & accessibility tool</p>
+    </header>
+
+    <main class="flex-1 w-full max-w-3xl mx-auto px-4 py-8 space-y-12 overflow-y-auto">
+        <!-- Decorative divider -->
+        <div class="flex justify-center mb-2 animate-fadeInUp" style="animation-delay:0.1s">
+            <div class="w-32 h-1 rounded-full bg-gradient-to-r from-indigo-400 via-emerald-400 to-pink-400 opacity-70">
+            </div>
+        </div>
+
+        <!-- Image/Design Upload or Picker -->
+        <section
+            class="bg-white/90 rounded-2xl shadow-xl p-6 flex flex-col items-center animate-fadeInUp backdrop-blur-sm"
+            style="animation-delay:0.2s; animation-duration:1s;">
+            <h2 class="text-2xl font-semibold mb-6 text-indigo-700">Upload or Pick a Design</h2>
+            <div class="flex flex-col md:flex-row gap-4 w-full justify-center items-center">
+                <label class="custom-file-input">
+                    Upload Image
+                    <input type="file" id="imageUpload" accept="image/*" />
+                </label>
+                <button
+                    class="px-6 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-emerald-400 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    id="pickFromGalleryBtn">Pick from Gallery</button>
+            </div>
+            <div class="mt-6 w-full flex justify-center">
+                <img id="imagePreview" src="https://placehold.co/200x150/E0F2FE/4338CA?text=Image+Preview"
+                    alt="Image Preview"
+                    class="w-48 h-36 object-cover rounded-xl shadow-inner border border-dashed border-indigo-300 transition-transform duration-300 hover:scale-105" />
+            </div>
+            <p id="imageUploadMessage" class="text-sm text-gray-500 mt-2"></p>
+        </section>
+
+        <!-- Color Palette Generator -->
+        <section class="bg-white/90 rounded-2xl shadow-xl p-6 animate-fadeInUp backdrop-blur-sm"
+            style="animation-delay:0.3s; animation-duration:1s;">
+            <h2 class="text-2xl font-semibold mb-6 text-emerald-700">Color Palette Generator</h2>
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
+                <label for="baseColor" class="text-gray-700 font-medium">Base Color:</label>
+                <input type="color" id="baseColor" value="#10B981"
+                    class="w-12 h-12 p-0 border-2 border-emerald-200 rounded-lg bg-transparent focus:ring-2 focus:ring-emerald-400"
+                    aria-label="Select base color" />
+                <span id="baseColorHex" class="text-emerald-700 font-mono text-lg">#10B981</span>
+                <button id="generatePaletteBtn"
+                    class="px-6 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-pink-400 text-white font-bold shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 flex-grow"
+                    aria-label="Generate Palette">Generate Palette</button>
+            </div>
+            <div id="paletteResults" class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <!-- Dynamic palette swatches will be inserted here -->
+                <p class="col-span-full text-center text-gray-500">Click "Generate Palette" to see suggestions.</p>
+            </div>
+        </section>
+
+        <!-- Accessibility Checker -->
+        <section class="bg-white/90 rounded-2xl shadow-xl p-6 animate-fadeInUp backdrop-blur-sm"
+            style="animation-delay:0.4s; animation-duration:1s;">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-700">Accessibility Checker</h2>
+            <div class="flex flex-col md:flex-row gap-4 items-center mb-6">
+                <label class="flex flex-col items-start">
+                    <span class="text-sm mb-1 text-gray-700 font-medium">Foreground Color</span>
+                    <input type="color" id="fgColor" value="#FFFFFF"
+                        class="w-12 h-12 p-0 border-2 border-blue-200 rounded-lg bg-transparent focus:ring-2 focus:ring-blue-400"
+                        aria-label="Select foreground color" />
+                </label>
+                <label class="flex flex-col items-start">
+                    <span class="text-sm mb-1 text-gray-700 font-medium">Background Color</span>
+                    <input type="color" id="bgColor" value="#1E90FF"
+                        class="w-12 h-12 p-0 border-2 border-indigo-200 rounded-lg bg-transparent focus:ring-2 focus:ring-indigo-400"
+                        aria-label="Select background color" />
+                </label>
+                <button type="button" id="checkContrastBtn"
+                    class="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-400 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 mt-4 md:mt-0 flex-grow"
+                    aria-label="Check Accessibility">Check Contrast</button>
+            </div>
+            <div id="contrastResults" class="bg-gray-50 p-4 rounded-lg shadow-inner border border-gray-200 text-center">
+                <p class="text-lg font-bold mb-2">Ratio: <span id="ratioValue" class="text-gray-700">N/A</span></p>
+                <p id="wcagStatus" class="text-sm font-semibold text-gray-500">Select colors to check</p>
+                <div id="previewText" class="mt-4 p-4 rounded-md text-xl font-bold border border-gray-300"
+                    style="background-color: #1E90FF; color: #FFFFFF;">
+                    Example Text Preview
+                </div>
+            </div>
+        </section>
+
+        <!-- Color Blindness Simulation -->
+        <section class="bg-white/90 rounded-2xl shadow-xl p-6 animate-fadeInUp backdrop-blur-sm"
+            style="animation-delay:0.5s; animation-duration:1s;">
+            <h2 class="text-2xl font-semibold mb-6 text-pink-700">Color Blindness Simulation</h2>
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <label class="flex items-center space-x-2 text-gray-700">
+                    <input type="radio" name="simulationType" value="normal" checked
+                        class="form-radio text-pink-600 focus:ring-pink-500" />
+                    <span>Normal</span>
+                </label>
+                <label class="flex items-center space-x-2 text-gray-700">
+                    <input type="radio" name="simulationType" value="protanopia"
+                        class="form-radio text-pink-600 focus:ring-pink-500" />
+                    <span>Protanopia</span>
+                </label>
+                <label class="flex items-center space-x-2 text-gray-700">
+                    <input type="radio" name="simulationType" value="deuteranopia"
+                        class="form-radio text-pink-600 focus:ring-pink-500" />
+                    <span>Deuteranopia</span>
+                </label>
+                <label class="flex items-center space-x-2 text-gray-700">
+                    <input type="radio" name="simulationType" value="tritanopia"
+                        class="form-radio text-pink-600 focus:ring-pink-500" />
+                    <span>Tritanopia</span>
+                </label>
+                <label class="flex items-center space-x-2 text-gray-700">
+                    <input type="radio" name="simulationType" value="monochromacy"
+                        class="form-radio text-pink-600 focus:ring-pink-500" />
+                    <span>Monochromacy</span>
+                </label>
+            </div>
+            <button id="applySimulationBtn"
+                class="px-6 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-indigo-400 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-pink-400 mb-6"
+                aria-label="Apply Simulation">Apply Simulation</button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col items-center">
+                    <h4 class="text-lg font-semibold mb-2 text-gray-700">Original</h4>
+                    <canvas id="originalCanvas"
+                        class="w-full h-48 bg-gray-100 rounded-xl shadow-inner border border-dashed border-gray-300"></canvas>
+                </div>
+                <div class="flex flex-col items-center">
+                    <h4 class="text-lg font-semibold mb-2 text-gray-700">Simulated (<span
+                            id="simulatedType">Normal</span>)</h4>
+                    <canvas id="simulatedCanvas"
+                        class="w-full h-48 bg-gray-100 rounded-xl shadow-inner border border-dashed border-gray-300"></canvas>
+                </div>
+            </div>
+            <p id="simulationMessage" class="text-sm text-gray-500 mt-4 text-center"></p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer
+        class="bg-white/80 shadow-inner py-4 px-4 md:px-8 text-center text-gray-500 text-sm mt-8 rounded-t-2xl animate-fadeInUp backdrop-blur-sm"
+        style="animation-delay:0.6s;">
+        <p>&copy; 2025 Palette Perfect. All rights reserved.</p>
+        <a href="#" class="underline hover:text-indigo-600 transition-colors">View on GitHub / Hackathon Page</a>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        // --- Utility Functions ---
+
+        // Converts HEX to RGB object {r, g, b}
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return { r, g, b };
+        }
+
+        // Converts RGB object {r, g, b} to HEX string
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+
+        // Calculates relative luminance for WCAG contrast
+        function getRelativeLuminance(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            let R = r / 255;
+            let G = g / 255;
+            let B = b / 255;
+
+            R = R <= 0.03928 ? R / 12.92 : Math.pow((R + 0.055) / 1.055, 2.4);
+            G = G <= 0.03928 ? G / 12.92 : Math.pow((G + 0.055) / 1.055, 2.4);
+            B = B <= 0.03928 ? B / 12.92 : Math.pow((B + 0.055) / 1.055, 2.4);
+
+            return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+        }
+
+        // Calculates WCAG contrast ratio
+        function calculateContrastRatio(hex1, hex2) {
+            const L1 = getRelativeLuminance(hex1);
+            const L2 = getRelativeLuminance(hex2);
+            const ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+            return parseFloat(ratio.toFixed(2));
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+
+            if (type === 'error') {
+                toast.style.background = '#ef4444';
+            }
+
+            document.body.appendChild(toast);
+
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Copies text to clipboard
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied to clipboard: ' + text);
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Copied to clipboard: ' + text);
+            } catch (err) {
+                showToast('Failed to copy to clipboard', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Generate harmonious palette from base color
+        function generateHarmoniousPalette(baseHex) {
+            const { r, g, b } = hexToRgb(baseHex);
+
+            // Convert to HSL for better color manipulation
+            function rgbToHsl(r, g, b) {
+                r /= 255; g /= 255; b /= 255;
+                const max = Math.max(r, g, b);
+                const min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
+
+                if (max === min) {
+                    h = s = 0;
+                } else {
+                    const d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+                return [h * 360, s * 100, l * 100];
+            }
+
+            function hslToRgb(h, s, l) {
+                h /= 360; s /= 100; l /= 100;
+                const c = (1 - Math.abs(2 * l - 1)) * s;
+                const x = c * (1 - Math.abs((h * 6) % 2 - 1));
+                const m = l - c / 2;
+                let r, g, b;
+
+                if (0 <= h && h < 1 / 6) { r = c; g = x; b = 0; }
+                else if (1 / 6 <= h && h < 2 / 6) { r = x; g = c; b = 0; }
+                else if (2 / 6 <= h && h < 3 / 6) { r = 0; g = c; b = x; }
+                else if (3 / 6 <= h && h < 4 / 6) { r = 0; g = x; b = c; }
+                else if (4 / 6 <= h && h < 5 / 6) { r = x; g = 0; b = c; }
+                else { r = c; g = 0; b = x; }
+
+                return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+            }
+
+            const [h, s, l] = rgbToHsl(r, g, b);
+
+            // Generate multiple palettes with different color harmony rules
+            const palettes = [];
+
+            // Analogous palette
+            const analogous = [];
+            for (let i = 0; i < 5; i++) {
+                const newH = (h + i * 30) % 360;
+                const newS = Math.max(20, s - i * 5);
+                const newL = Math.max(20, Math.min(80, l + (i % 2 === 0 ? 10 : -10)));
+                const [newR, newG, newB] = hslToRgb(newH, newS, newL);
+                analogous.push(rgbToHex(newR, newG, newB));
+            }
+            palettes.push(analogous);
+
+            // Complementary palette
+            const complementary = [baseHex];
+            const compH = (h + 180) % 360;
+            for (let i = 1; i < 5; i++) {
+                const newH = i % 2 === 1 ? compH : h;
+                const newS = Math.max(30, s - i * 10);
+                const newL = Math.max(20, Math.min(80, l + (i - 2) * 15));
+                const [newR, newG, newB] = hslToRgb(newH, newS, newL);
+                complementary.push(rgbToHex(newR, newG, newB));
+            }
+            palettes.push(complementary);
+
+            // Triadic palette
+            const triadic = [];
+            for (let i = 0; i < 5; i++) {
+                const newH = (h + i * 120) % 360;
+                const newS = Math.max(25, s - i * 5);
+                const newL = Math.max(25, Math.min(75, l + (i % 2 === 0 ? 5 : -5)));
+                const [newR, newG, newB] = hslToRgb(newH, newS, newL);
+                triadic.push(rgbToHex(newR, newG, newB));
+            }
+            palettes.push(triadic);
+
+            return palettes;
+        }
+
+        // --- Color Blindness Simulation Functions ---
+        function simulateProtanopia(r, g, b) {
+            const newR = (0.567 * r) + (0.433 * g) + (0 * b);
+            const newG = (0.558 * r) + (0.442 * g) + (0 * b);
+            const newB = (0 * r) + (0.242 * g) + (0.758 * b);
+            return {
+                r: Math.round(Math.max(0, Math.min(255, newR))),
+                g: Math.round(Math.max(0, Math.min(255, newG))),
+                b: Math.round(Math.max(0, Math.min(255, newB)))
+            };
+        }
+
+        function simulateDeuteranopia(r, g, b) {
+            const newR = (0.625 * r) + (0.375 * g) + (0 * b);
+            const newG = (0.7 * r) + (0.3 * g) + (0 * b);
+            const newB = (0 * r) + (0.3 * g) + (0.7 * b);
+            return {
+                r: Math.round(Math.max(0, Math.min(255, newR))),
+                g: Math.round(Math.max(0, Math.min(255, newG))),
+                b: Math.round(Math.max(0, Math.min(255, newB)))
+            };
+        }
+
+        function simulateTritanopia(r, g, b) {
+            const newR = (0.95 * r) + (0.05 * g) + (0 * b);
+            const newG = (0 * r) + (0.433 * g) + (0.567 * b);
+            const newB = (0 * r) + (0.475 * g) + (0.525 * b);
+            return {
+                r: Math.round(Math.max(0, Math.min(255, newR))),
+                g: Math.round(Math.max(0, Math.min(255, newG))),
+                b: Math.round(Math.max(0, Math.min(255, newB)))
+            };
+        }
+
+        function simulateMonochromacy(r, g, b) {
+            const avg = Math.round(r * 0.299 + g * 0.587 + b * 0.114);
+            return { r: avg, g: avg, b: avg };
+        }
+
+        // Draw image on canvas
+        function drawCanvas(canvas, image) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 300;
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        }
+
+        // Apply color blindness simulation to canvas
+        function applyColorBlindnessSimulation(sourceCanvas, targetCanvas, simulationType) {
+            const sourceCtx = sourceCanvas.getContext('2d');
+            const targetCtx = targetCanvas.getContext('2d');
+
+            const imageData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+
+                let newColor;
+                switch (simulationType) {
+                    case 'protanopia':
+                        newColor = simulateProtanopia(r, g, b);
+                        break;
+                    case 'deuteranopia':
+                        newColor = simulateDeuteranopia(r, g, b);
+                        break;
+                    case 'tritanopia':
+                        newColor = simulateTritanopia(r, g, b);
+                        break;
+                    case 'monochromacy':
+                        newColor = simulateMonochromacy(r, g, b);
+                        break;
+                    default:
+                        newColor = { r, g, b };
+                }
+
+                data[i] = newColor.r;
+                data[i + 1] = newColor.g;
+                data[i + 2] = newColor.b;
+            }
+
+            targetCtx.putImageData(imageData, 0, 0);
+        }
+
+        // --- DOM Elements ---
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const imageUploadMessage = document.getElementById('imageUploadMessage');
+        const pickFromGalleryBtn = document.getElementById('pickFromGalleryBtn');
+
+        const baseColorInput = document.getElementById('baseColor');
+        const baseColorHexSpan = document.getElementById('baseColorHex');
+        const generatePaletteBtn = document.getElementById('generatePaletteBtn');
+        const paletteResults = document.getElementById('paletteResults');
+
+        const fgColorInput = document.getElementById('fgColor');
+        const bgColorInput = document.getElementById('bgColor');
+        const checkContrastBtn = document.getElementById('checkContrastBtn');
+        const ratioValueSpan = document.getElementById('ratioValue');
+        const wcagStatusP = document.getElementById('wcagStatus');
+        const previewTextDiv = document.getElementById('previewText');
+
+        const simulationTypeRadios = document.querySelectorAll('input[name="simulationType"]');
+        const applySimulationBtn = document.getElementById('applySimulationBtn');
+        const originalCanvas = document.getElementById('originalCanvas');
+        const simulatedCanvas = document.getElementById('simulatedCanvas');
+        const simulatedTypeSpan = document.getElementById('simulatedType');
+        const simulationMessage = document.getElementById('simulationMessage');
+
+        let currentImage = null;
+
+        // --- Event Listeners ---
+
+        // Image Upload
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imageUploadMessage.textContent = `Image "${file.name}" loaded.`;
+                    currentImage = new Image();
+                    currentImage.onload = () => {
+                        drawCanvas(originalCanvas, currentImage);
+                        drawCanvas(simulatedCanvas, currentImage);
+                        simulatedTypeSpan.textContent = 'Normal';
+                        simulationTypeRadios[0].checked = true;
+                        simulationMessage.textContent = '';
+                    };
+                    currentImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Pick from Gallery
+        pickFromGalleryBtn.addEventListener('click', () => {
+            const galleryImages = [
+                'https://placehold.co/400x300/A78BFA/FFFFFF?text=Nature',
+                'https://placehold.co/400x300/FDBA74/FFFFFF?text=Cityscape',
+                'https://placehold.co/400x300/6EE7B7/FFFFFF?text=Abstract',
+                'https://placehold.co/400x300/FB7185/FFFFFF?text=Portrait',
+                'https://placehold.co/400x300/60A5FA/FFFFFF?text=Landscape'
+            ];
+            const randomImage = galleryImages[Math.floor(Math.random() * galleryImages.length)];
+
+            currentImage = new Image();
+            currentImage.crossOrigin = 'anonymous';
+            currentImage.onload = () => {
+                imagePreview.src = randomImage;
+                imageUploadMessage.textContent = 'Gallery image loaded.';
+                drawCanvas(originalCanvas, currentImage);
+                drawCanvas(simulatedCanvas, currentImage);
+                simulatedTypeSpan.textContent = 'Normal';
+                simulationTypeRadios[0].checked = true;
+                simulationMessage.textContent = '';
+            };
+            currentImage.src = randomImage;
+        });
+
+        // Base Color Input
+        baseColorInput.addEventListener('input', (event) => {
+            baseColorHexSpan.textContent = event.target.value.toUpperCase();
+        });
+
+        // Generate Palette
+        generatePaletteBtn.addEventListener('click', () => {
+            const baseColor = baseColorInput.value;
+            const palettes = generateHarmoniousPalette(baseColor);
+            const paletteNames = ['Analogous', 'Complementary', 'Triadic'];
+
+            paletteResults.innerHTML = '';
+
+            palettes.forEach((palette, index) => {
+                const paletteDiv = document.createElement('div');
+                paletteDiv.className = 'palette-section';
+
+                const title = document.createElement('h4');
+                title.textContent = paletteNames[index];
+                title.style.marginBottom = '10px';
+                paletteDiv.appendChild(title);
+
+                const colorsDiv = document.createElement('div');
+                colorsDiv.className = 'palette-colors';
+
+                palette.forEach(color => {
+                    const colorDiv = document.createElement('div');
+                    colorDiv.className = 'color-item';
+                    colorDiv.style.backgroundColor = color;
+                    colorDiv.title = color;
+                    colorDiv.addEventListener('click', () => copyToClipboard(color));
+
+                    const colorLabel = document.createElement('span');
+                    colorLabel.textContent = color;
+                    colorLabel.style.color = getRelativeLuminance(color) > 0.5 ? '#000' : '#fff';
+                    colorDiv.appendChild(colorLabel);
+
+                    colorsDiv.appendChild(colorDiv);
+                });
+
+                paletteDiv.appendChild(colorsDiv);
+                paletteResults.appendChild(paletteDiv);
+            });
+        });
+
+        // Foreground Color Input
+        fgColorInput.addEventListener('input', updateContrastPreview);
+
+        // Background Color Input
+        bgColorInput.addEventListener('input', updateContrastPreview);
+
+        // Update contrast preview
+        function updateContrastPreview() {
+            const fgColor = fgColorInput.value;
+            const bgColor = bgColorInput.value;
+            previewTextDiv.style.color = fgColor;
+            previewTextDiv.style.backgroundColor = bgColor;
+        }
+
+        // Check Contrast
+        checkContrastBtn.addEventListener('click', () => {
+            const fgColor = fgColorInput.value;
+            const bgColor = bgColorInput.value;
+            const ratio = calculateContrastRatio(fgColor, bgColor);
+
+            ratioValueSpan.textContent = ratio;
+
+            let status = '';
+            let statusClass = '';
+
+            if (ratio >= 7) {
+                status = 'AAA (Enhanced) - Excellent accessibility';
+                statusClass = 'wcag-aaa';
+            } else if (ratio >= 4.5) {
+                status = 'AA (Standard) - Good accessibility';
+                statusClass = 'wcag-aa';
+            } else if (ratio >= 3) {
+                status = 'Large text only - Limited accessibility';
+                statusClass = 'wcag-large';
+            } else {
+                status = 'Fails WCAG - Poor accessibility';
+                statusClass = 'wcag-fail';
+            }
+
+            wcagStatusP.textContent = status;
+            wcagStatusP.className = statusClass;
+        });
+
+        // Apply Color Blindness Simulation
+        applySimulationBtn.addEventListener('click', () => {
+            if (!currentImage) {
+                showToast('Please upload an image first', 'error');
+                return;
+            }
+
+            const selectedType = document.querySelector('input[name="simulationType"]:checked').value;
+
+            if (selectedType === 'normal') {
+                drawCanvas(simulatedCanvas, currentImage);
+                simulatedTypeSpan.textContent = 'Normal';
+                simulationMessage.textContent = '';
+            } else {
+                applyColorBlindnessSimulation(originalCanvas, simulatedCanvas, selectedType);
+                const typeNames = {
+                    'protanopia': 'Protanopia (Red-blind)',
+                    'deuteranopia': 'Deuteranopia (Green-blind)',
+                    'tritanopia': 'Tritanopia (Blue-blind)',
+                    'monochromacy': 'Monochromacy (Color-blind)'
+                };
+                simulatedTypeSpan.textContent = typeNames[selectedType];
+                simulationMessage.textContent = `Simulation applied: ${typeNames[selectedType]}`;
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            baseColorHexSpan.textContent = baseColorInput.value.toUpperCase();
+            updateContrastPreview();
+        });
+    </script>
+</body>
+
+</html>
