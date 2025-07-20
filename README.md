@@ -1,4 +1,4 @@
-#Palette Perfect ✨
+##Palette Perfect
 
 Palette Perfect is an innovative AI-powered plugin designed for Adobe Photoshop and Illustrator that revolutionizes the way designers approach color. This tool helps you effortlessly generate harmonious color palettes, check for WCAG accessibility compliance in real-time, and simulate various forms of color blindness to ensure your designs are inclusive for everyone.
 
